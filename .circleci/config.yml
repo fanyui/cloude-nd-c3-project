@@ -8,3 +8,7 @@ jobs:
     steps:
       - checkout # check out the code in the project directory
       - run: echo "Hello World" # run the `echo` command
+workflows:
+    hello-world:
+      jobs:
+        - hello-world
