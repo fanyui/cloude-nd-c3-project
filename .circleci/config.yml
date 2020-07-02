@@ -51,10 +51,17 @@ jobs:
       NODE_OPTIONS=--max_old_space_size=8192
     steps:
       - checkout
-      - node/with-cache:
-          steps:
-            - run: cd frontend && npm install
-            - run: cd frontend && npm test
+      - run: cd frontend && npm install
+      - run: cd frontend && npm test
+  check-vulnerability:
+    executor:
+      name: node/default
+    environment: 
+      NODE_OPTIONS=--max_old_space_size=8192
+    steps:
+      - checkout
+      - run: cd backend && npm audit --audit-level=critical
+      - run: cd frontend && npm audit --audit-level=critical
 workflows:
     hello-world:
       jobs:
@@ -74,3 +81,7 @@ workflows:
         - compile-test-bend:
             requires:
               - build-compile-bend
+        - check-vulnerability:
+            requires:
+              - compile-test-bend
+              - build-compile-fend
