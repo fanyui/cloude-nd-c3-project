@@ -51,13 +51,16 @@ workflows:
         - hello-world
     build-compile-test:
       jobs:
-        - checkout-code:
-          requires:
-            - build-compile-fend
-            - build-compile-bend
-            - compile-test-fend:
-                requires:
-                  - build-compile-fend
-            - compile-test-bend:
-                requires:
-                  - build-compile-bend
+        - checkout-code
+        - build-compile-fend:
+            requires:
+              - checkout-code    
+        - build-compile-bend:
+            requires:
+              - checkout-code
+        - compile-test-fend:
+            requires:
+              - build-compile-fend
+        - compile-test-bend:
+            requires:
+              - build-compile-bend
