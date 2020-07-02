@@ -50,9 +50,9 @@ workflows:
       jobs:
         - build-compile-fend
         - build-compile-bend
-        - compile-test-fend
+        - compile-test-fend:
             requires:
               - build-compile-fend
-        - compile-test-bend
+        - compile-test-bend:
             requires:
               - build-compile-bend
