@@ -8,7 +8,31 @@ jobs:
     steps:
       - checkout # check out the code in the project directory
       - run: echo "Hello World" # run the `echo` command
+  build-compile-fend:
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: cd frontend && npm install
+            - run: cd frontend && npm build
+  build-compile-bend:
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: cd backend && npm install
+            - run: cd backend && npm build
 workflows:
     hello-world:
       jobs:
         - hello-world
+    build-compile-fend:
+      jobs:
+        - build-compile-fend
+    build-compile-bend:
+      jobs:
+        - build-compile-bend
