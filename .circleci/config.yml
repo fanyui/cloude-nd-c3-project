@@ -26,11 +26,33 @@ jobs:
           steps:
             - run: cd backend && npm install
             - run: cd backend && npm run build
+  compile-test-bend:
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: cd backend && npm test
+  compile-test-fend:
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: cd frontend && npm test
 workflows:
     hello-world:
       jobs:
         - hello-world
-    build-compile:
+    build-compile-test:
       jobs:
         - build-compile-fend
         - build-compile-bend
+        - compile-test-fend
+            requires:
+              - build-compile-fend
+        - compile-test-bend
+            requires:
+              - build-compile-bend
