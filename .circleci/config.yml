@@ -8,11 +8,17 @@ jobs:
     steps:
       - checkout # check out the code in the project directory
       - run: echo "Hello World" # run the `echo` command
-  build-compile-fend:
+
+  checkout-code:
     executor:
       name: node/default
     steps:
       - checkout
+
+  build-compile-fend:
+    executor:
+      name: node/default
+    steps:
       - node/with-cache:
           steps:
             - run: cd frontend && npm install
@@ -45,11 +51,13 @@ workflows:
         - hello-world
     build-compile-test:
       jobs:
-        - build-compile-fend
-        - build-compile-bend
-        - compile-test-fend:
-            requires:
-              - build-compile-fend
-        - compile-test-bend:
-            requires:
-              - build-compile-bend
+        - checkout-code:
+          requires:
+            - build-compile-fend
+            - build-compile-bend
+            - compile-test-fend:
+                requires:
+                  - build-compile-fend
+            - compile-test-bend:
+                requires:
+                  - build-compile-bend
