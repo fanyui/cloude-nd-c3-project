@@ -47,6 +47,8 @@ jobs:
   compile-test-fend:
     executor:
       name: node/default
+    environment: 
+      NODE_OPTIONS=--max_old_space_size=4096
     steps:
       - checkout
       - node/with-cache:
