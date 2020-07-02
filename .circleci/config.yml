@@ -21,7 +21,6 @@ jobs:
     executor:
       name: node/default
     steps:
-      - checkout
       - node/with-cache:
           steps:
             - run: cd backend && npm install
@@ -30,7 +29,6 @@ jobs:
     executor:
       name: node/default
     steps:
-      - checkout
       - node/with-cache:
           steps:
             - run: cd backend && npm test
@@ -38,7 +36,6 @@ jobs:
     executor:
       name: node/default
     steps:
-      - checkout
       - node/with-cache:
           steps:
             - run: cd frontend && npm test
