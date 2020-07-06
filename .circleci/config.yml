@@ -95,7 +95,7 @@ workflows:
         - check-vulnerability:
             requires:
               - compile-test-bend
-              - build-compile-fend
+              - compile-test-fend
         - create_infrastructure:
             requires:
               - check-vulnerability
