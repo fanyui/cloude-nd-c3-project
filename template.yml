@@ -1,7 +1,7 @@
 Description: UdaPeople backend stack.
 
 Parameters:
-  ID:
+  ID: superpowers
     Description: Unique identifier.
     Type: String
 
