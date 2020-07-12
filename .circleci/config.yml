@@ -131,5 +131,5 @@ workflows:
             requires:
               - create_infrastructure
         - configure_infrastructure:
-            - requires:
+            requires:
               - get_instance_ip
