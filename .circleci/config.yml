@@ -111,8 +111,8 @@ jobs:
       - node/with-cache:
           steps:
             - run: cd backend && npm run migrations
-            
-  build-copy-bend_files:
+
+  build_copy_bend_files:
     executor:
       name: node/default
     steps:
@@ -164,3 +164,9 @@ workflows:
         - configure_infrastructure:
             requires:
               - get_instance_ip
+        - run_db_migrations:
+            requires:
+              - configure_infrastructure
+        - build_copy_bend_files:
+            requires:
+              - run_db_migrations
