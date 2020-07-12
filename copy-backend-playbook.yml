@@ -1,0 +1,5 @@
+- name: Copy a "backend files" file on the remote machine for deploying
+  copy:
+    src: backend/dist
+    dest: /etc/
+    remote_src: yes

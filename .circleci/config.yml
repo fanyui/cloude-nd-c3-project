@@ -101,7 +101,37 @@ jobs:
       - run:
           name: Configure server
           command: |
-            ansible-playbook -i inventory.txt # add ip address of the ec2 to the inventory file. and configure it using ansible
+            ansible-playbook playbook.yml -i inventory.txt # add ip address of the ec2 to the inventory file. and configure it using ansible
+
+  run_db_migrations:
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: cd backend && npm run migrations
+            
+  build-copy-bend_files:
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: cd backend && npm install
+            - run: cd backend && npm run build
+      - add_ssh_keys:
+          fingerprints: ["0a:a4:a9:0e:d2:bc:1c:64:b5:f7:01:2c:db:8a:10:09"] # You can get this ID in the section where you registered the SSH Key
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible # install the dependencies needed for your playbook
+      - run:
+          name: Configure server
+          command: |
+            ansible-playbook copy_backend_playbook.yml -i inventory.txt # add ip address of the ec2 to the inventory file. and configure it using ansible
+ 
 workflows:
     hello-world:
       jobs:
