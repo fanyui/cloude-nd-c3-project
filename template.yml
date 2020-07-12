@@ -4,7 +4,6 @@ Parameters:
   ID: 
     Description: Unique identifier.
     Type: String
-    ID: superpowers
     Default: superpowers
 
 Resources:
