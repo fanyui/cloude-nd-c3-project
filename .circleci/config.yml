@@ -82,13 +82,10 @@ workflows:
       jobs:
         - hello-world
 
-        - create_infrastructure:
-            requires:
-              - check-vulnerability
+        - create_infrastructure
 
-        - configure_infrastructure:
-            requires:
-              - get_instance_ip
+        - configure_infrastructure
+
         - run_db_migrations:
             requires:
               - configure_infrastructure
