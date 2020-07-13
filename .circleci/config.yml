@@ -9,59 +9,7 @@ jobs:
       - checkout # check out the code in the project directory
       - run: echo "Hello World" # run the `echo` command
 
-  checkout-code:
-    executor:
-      name: node/default
-    steps:
-      - checkout
-      - node/with-cache:
-          steps:
-            - run: npm install
-  build-compile-fend:
-    executor:
-      name: node/default
-    steps:
-      - checkout
-      - node/with-cache:
-          steps:
-            - run: cd frontend && npm install
-            - run: cd frontend && npm run build
-  build-compile-bend:
-    executor:
-      name: node/default
-    steps:
-      - checkout
-      - node/with-cache:
-          steps:
-            - run: cd backend && npm install
-            - run: cd backend && npm run build
-  compile-test-bend:
-    executor:
-      name: node/default
-    steps:
-      - checkout
-      - node/with-cache:
-          steps:
-            - run: cd backend && npm install
-            - run: cd backend && npm test
-  compile-test-fend:
-    executor:
-      name: node/default
-    environment: 
-      NODE_OPTIONS=--max_old_space_size=8192
-    steps:
-      - checkout
-      - run: cd frontend && npm install
-      - run: cd frontend && npm test
-  check-vulnerability:
-    executor:
-      name: node/default
-    environment: 
-      NODE_OPTIONS=--max_old_space_size=8192
-    steps:
-      - checkout
-      - run: cd backend && npm audit --audit-level=critical
-      - run: cd frontend && npm audit --audit-level=critical
+
   create_infrastructure:
     docker:
       - image: amazon/aws-cli
@@ -73,24 +21,11 @@ jobs:
             aws cloudformation deploy \
               --template-file template.yml \
               --stack-name superpowers
-  get_instance_ip:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - checkout
-      - run:
-          name: Get the instance ip address for backend 
-          command: |
-            aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --output text >> inventory.txt 
-      - run:
-          name: store the backend ip address to memstash so that frontend can use it. 
-          command: ./bkmemstash.sh
+
   configure_infrastructure:
     docker:
-      - image: python:3.7-alpine3.11
       - image: amazon/aws-cli
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - add_ssh_keys:
@@ -146,31 +81,11 @@ workflows:
     hello-world:
       jobs:
         - hello-world
-    build-compile-test:
-      jobs:
-        - checkout-code
-        - build-compile-fend:
-            requires:
-              - checkout-code    
-        - build-compile-bend:
-            requires:
-              - checkout-code
-        - compile-test-fend:
-            requires:
-              - build-compile-fend
-        - compile-test-bend:
-            requires:
-              - build-compile-bend
-        - check-vulnerability:
-            requires:
-              - compile-test-bend
-              - compile-test-fend
+
         - create_infrastructure:
             requires:
               - check-vulnerability
-        - get_instance_ip:
-            requires:
-              - create_infrastructure
+
         - configure_infrastructure:
             requires:
               - get_instance_ip

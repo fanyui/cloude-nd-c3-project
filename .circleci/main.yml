@@ -38,3 +38,13 @@
       export TYPEORM_DATABASE=superpowers
     marker: "# {mark} ANSIBLE MANAGED BLOCK "
 
+- name: Creates directory
+  file:
+    path: ~/{{ http_host }}
+    state: directory
+
+- name: Copy index test page
+  template:
+    src: "files/index.js"
+    dest: "~/{{ http_host }}/main.js"
+
