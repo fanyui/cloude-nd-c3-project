@@ -84,7 +84,9 @@ workflows:
 
         - create_infrastructure
 
-        - configure_infrastructure
+        - configure_infrastructure:
+            requires:
+              - create_infrastructure
 
         - run_db_migrations:
             requires:
