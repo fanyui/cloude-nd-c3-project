@@ -96,6 +96,10 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["0a:a4:a9:0e:d2:bc:1c:64:b5:f7:01:2c:db:8a:10:09"] # You can get this ID in the section where you registered the SSH Key 
+      - run: |
+          ip=$(curl -H "token: 347407f8-3d4a-4990-98c5-3b96142561b4" --request GET https://api.memstash.io/values/backend ) \
+          echo "[all]" > inventory \
+          echo $ip >> inventory   
       - run:
           name: create inventory file by fetching the ip address from menstash.io. 
           command: ./extract_ip.sh   
