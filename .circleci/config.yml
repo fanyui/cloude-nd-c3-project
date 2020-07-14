@@ -76,7 +76,8 @@ jobs:
 
   get_instance_ip:
     working_directory: ~/project
-    executor: aws-cli/default
+    executor:
+      name: aws-cli/default
     steps:
       - checkout
       - run:
