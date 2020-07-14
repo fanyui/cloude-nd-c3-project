@@ -76,8 +76,7 @@ jobs:
 
   get_instance_ip:
     working_directory: ~/project
-    docker:
-      - image: amazon/aws-cli
+    executor: aws-cli/default
     steps:
       - checkout
       - run:
