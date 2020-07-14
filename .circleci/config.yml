@@ -88,19 +88,31 @@ jobs:
       - run:
           name: store the backend ip address to memstash so that frontend can use it. 
           command: ./bkmemstash.sh    
+  setup_workspace:
+    working_directory: ~/project
+    docker:
+      - image: circleci/node:8.2.1
+    steps:
+      - checkout
+      - run:
+          name: store the backend ip address to memstash so that frontend can use it. 
+          command: ./extract_ip_address.sh  
+
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .   
 
   configure_infrastructure:
+    working_directory: ~/project
+
     docker:
       - image: python:3.7-alpine3.11
     steps:
-      - checkout
+      - attach_workspace:
+          at: ~/project      
       - add_ssh_keys:
-          fingerprints: ["0a:a4:a9:0e:d2:bc:1c:64:b5:f7:01:2c:db:8a:10:09"] # You can get this ID in the section where you registered the SSH Key 
-      - run: |
-          echo "[all]" > inventory 
-          ip=$(curl -H "token: 347407f8-3d4a-4990-98c5-3b96142561b4" --request GET https://api.memstash.io/values/backend )
-          echo $ip
-          echo $ip >> inventory    
+          fingerprints: ["0a:a4:a9:0e:d2:bc:1c:64:b5:f7:01:2c:db:8a:10:09"] # You can get this ID in the section where you registered the SSH Key    
       - run:
           name: Install dependencies
           command: |
@@ -168,9 +180,12 @@ workflows:
         - get_instance_ip:
             requires:
               - create_infrastructure
-        - configure_infrastructure:
+        - setup_workspace:
             requires:
               - get_instance_ip
+        - configure_infrastructure:
+            requires:
+              - setup_workspace
         - run_db_migrations:
             requires:
               - configure_infrastructure
