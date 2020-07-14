@@ -73,29 +73,13 @@ jobs:
             aws cloudformation deploy \
               --template-file template.yml \
               --stack-name superpowers
-  get_instance_ip:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - checkout
-      - run:
-          name: Get the instance ip address for backend 
-          command: |
-            aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --output text >> inventory.txt 
-      - run:
-          name: store the backend ip address to memstash so that frontend can use it. 
-          command: ./bkmemstash.sh
+
   get_instance_ip:
     working_directory: ~/project
     docker:
-      - image: python:3.7-alpine3.11
       - image: amazon/aws-cli
     steps:
       - checkout
-      - add_ssh_keys:
-          fingerprints: ["0a:a4:a9:0e:d2:bc:1c:64:b5:f7:01:2c:db:8a:10:09"] # You can get this ID in the section where you registered the SSH Key
       - run:
           name: Get the instance ip address for backend 
           command: |
