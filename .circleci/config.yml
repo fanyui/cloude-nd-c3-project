@@ -87,7 +87,7 @@ jobs:
       - run:
           name: store the backend ip address to memstash so that frontend can use it. 
           command: ./bkmemstash.sh
-  configure_infrastructure:
+  get_instance_ip:
     working_directory: ~/project
     docker:
       - image: python:3.7-alpine3.11
