@@ -75,9 +75,8 @@ jobs:
               --stack-name superpowers
 
   get_instance_ip:
-    working_directory: ~/project
-    executor:
-      name: aws-cli/default
+    docker:
+      - image: amazon/aws-cli
     steps:
       - checkout
       - run:
@@ -86,23 +85,20 @@ jobs:
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> inventory
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - . 
       - run:
           name: store the backend ip address to memstash so that frontend can use it. 
           command: ./bkmemstash.sh    
 
   configure_infrastructure:
-    working_directory: ~/project
     docker:
       - image: python:3.7-alpine3.11
     steps:
-      - attach_workspace:
-          at: ~/project
+      - checkout
       - add_ssh_keys:
           fingerprints: ["0a:a4:a9:0e:d2:bc:1c:64:b5:f7:01:2c:db:8a:10:09"] # You can get this ID in the section where you registered the SSH Key 
+      - run:
+          name: create inventory file by fetching the ip address from menstash.io. 
+          command: ./extract_ip.sh   
       - run:
           name: Install dependencies
           command: |
