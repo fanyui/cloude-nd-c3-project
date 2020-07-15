@@ -1,5 +1,5 @@
 ---
-- name: Exercise #1
+- name: copy backend files to server #1
   hosts: all
 
   roles:
