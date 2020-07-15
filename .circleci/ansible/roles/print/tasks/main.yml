@@ -14,19 +14,4 @@
     production: yes
     state: present
 
-- name: Set the ENVIRONMENT variable to .bash_profile
-  become: true
-
-  blockinfile:
-    path: ~/.bash_profile
-    block: |
-      export ENVIRONMENT=production
-      export TYPEORM_CONNECTION=postgres
-      export TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts
-      export TYPEORM_HOST=superpowers.ckbdwvzp4iah.us-west-2.rds.amazonaws.com
-      export TYPEORM_PORT=5432
-      export TYPEORM_USERNAME=superpowers
-      export TYPEORM_PASSWORD=FE14A09$
-      export TYPEORM_DATABASE=superpowers
-    marker: "# {mark} ANSIBLE MANAGED BLOCK "
 
