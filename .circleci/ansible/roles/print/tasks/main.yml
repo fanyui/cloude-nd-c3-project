@@ -1,8 +1,30 @@
 ---
- - name: Print env variable
-   shell: echo $PATH
-   register: print_result
+- name: "install dependencies."
+  become: true
+  apt:
+    name: ["nodejs", "npm"]
+    state: latest
+    update_cache: yes
 
- - name: print message
-   debug:
-     msg: "{{ print_result.stdout_lines }}"
+- name: "install pm2"
+  become: true
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present
+
+- name: Set the ENVIRONMENT variable to .bash_profile
+  blockinfile:
+    path: ~/.bash_profile
+    block: |
+      export ENVIRONMENT=production
+      export TYPEORM_CONNECTION=postgres
+      export TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts
+      export TYPEORM_HOST=superpowers.ckbdwvzp4iah.us-west-2.rds.amazonaws.com
+      export TYPEORM_PORT=5432
+      export TYPEORM_USERNAME=superpowers
+      export TYPEORM_PASSWORD=FE14A09$
+      export TYPEORM_DATABASE=superpowers
+    marker: "# {mark} ANSIBLE MANAGED BLOCK "
+
