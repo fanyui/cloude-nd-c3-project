@@ -118,6 +118,11 @@ jobs:
           command: |
             apk add --update ansible # install the dependencies needed for your playbook
       - run:
+          name: set ansible host key environment variable 
+          command: |
+            export ANSIBLE_HOST_KEY_CHECKING=False
+         
+      - run:
           name: Configure server
           command: |
             ansible-playbook  ~/project/.circleci/ansible/main.yml -i ~/project/inventory  # add ip address of the ec2 to the inventory file. and configure it using ansible
@@ -148,6 +153,11 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible # install the dependencies needed for your playbook
+      - run:
+          name: Set ansible host key variable in environement
+          command: |
+            export ANSIBLE_HOST_KEY_CHECKING=False
+ 
       - run:
           name: Configure server
           command: |
