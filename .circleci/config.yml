@@ -120,7 +120,7 @@ jobs:
       - run:
           name: Configure server
           command: |
-            ansible-playbook playbook.yml -i inventory # add ip address of the ec2 to the inventory file. and configure it using ansible
+            ansible-playbook  ~/project/.circleci/main.yml  # add ip address of the ec2 to the inventory file. and configure it using ansible
 
   run_db_migrations:
     executor:
