@@ -1,6 +1,6 @@
 ---
 - name: copy backend files to server #1
   hosts: all
-
+  gather_facts: False
   roles:
    - deploy
