@@ -105,14 +105,13 @@ jobs:
 
   configure_infrastructure:
     working_directory: ~/project
-
     docker:
       - image: python:3.7-alpine3.11
     steps:
       - attach_workspace:
           at: ~/project      
       - add_ssh_keys:
-          fingerprints: ["0a:a4:a9:0e:d2:bc:1c:64:b5:f7:01:2c:db:8a:10:09"] # You can get this ID in the section where you registered the SSH Key    
+          fingerprints: ["70:7f:5c:d9:8b:88:6b:b8:e8:68:90:74:cd:a5:a7:70"] # You can get this ID in the section where you registered the SSH Key    
       - run:
           name: Install dependencies
           command: |
@@ -148,7 +147,7 @@ jobs:
             - run: cd ~/project/backend && npm install
             - run: cd ~/project/backend && npm run build
       - add_ssh_keys:
-          fingerprints: ["0a:a4:a9:0e:d2:bc:1c:64:b5:f7:01:2c:db:8a:10:09"] # You can get this ID in the section where you registered the SSH Key
+          fingerprints: ["70:7f:5c:d9:8b:88:6b:b8:e8:68:90:74:cd:a5:a7:70"] # You can get this ID in the section where you registered the SSH Key
       - run:
           name: Install dependencies
           command: |
