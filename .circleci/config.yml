@@ -116,11 +116,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible # install the dependencies needed for your playbook
-      - run:
-          name: set ansible host key environment variable 
-          command: |
-            ansible -m ping -i ~/project/inventory all
-         
+
       - run:
           name: Configure server
           command: |
