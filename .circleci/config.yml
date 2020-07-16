@@ -127,13 +127,16 @@ jobs:
             ansible-playbook  ~/project/.circleci/ansible/main.yml -i ~/project/inventory  # add ip address of the ec2 to the inventory file. and configure it using ansible
 
   run_db_migrations:
+    working_directory: ~/project
     executor:
       name: node/default
     steps:
-      - checkout
+      - attach_workspace:
+          at: ~/project    
+
       - node/with-cache:
           steps:
-            - run: cd backend && npm run migrations
+            - run: cd ~/project/backend && npm run migrations
 
   build_copy_bend_files:
     working_directory: ~/project
