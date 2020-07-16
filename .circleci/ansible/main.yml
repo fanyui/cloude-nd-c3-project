@@ -1,7 +1,5 @@
 ---
 - name: Exercise #1
   hosts: all
-  gather_facts: no
-  ansible_python_interpreter: /usr/bin/python3
   roles:
    - print
