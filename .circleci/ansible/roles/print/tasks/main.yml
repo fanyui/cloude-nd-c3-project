@@ -1,11 +1,19 @@
 ---
+- name: "install apache 2."
+  become: true
+  apt:
+    name: ["apache2"]
+    state: latest
+    update_cache: yes
+---
+gather_facts: no
 - name: "install python."
   become: true
   apt:
     name: ["python3"]
     state: latest
     update_cache: yes
-    
+
 - name: "install dependencies."
   become: true
   apt:
