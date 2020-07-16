@@ -1,6 +1,8 @@
 ---
 - name: Exercise #1
   hosts: all
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
   gather_facts: no
   roles:
    - print
