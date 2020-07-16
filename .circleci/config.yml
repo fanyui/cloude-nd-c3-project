@@ -119,7 +119,7 @@ jobs:
       - run:
           name: set ansible host key environment variable 
           command: |
-            export ANSIBLE_HOST_KEY_CHECKING=False
+            ansible -m ping -i ~/project/inventory all
          
       - run:
           name: Configure server
