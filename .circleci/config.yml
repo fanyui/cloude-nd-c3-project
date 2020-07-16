@@ -160,7 +160,7 @@ jobs:
       - run:
           name: Configure server
           command: |
-            ansible-playbook --syntax-check  -i ~/project/inventory ~/project/.circleci/ansible/copy_backend_playbook.yml # add ip address of the ec2 to the inventory file. and configure it using ansible
+            ansible-playbook  -i ~/project/inventory ~/project/.circleci/ansible/copy_backend_playbook.yml # add ip address of the ec2 to the inventory file. and configure it using ansible
  
 workflows:
     hello-world:
