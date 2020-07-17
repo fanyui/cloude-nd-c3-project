@@ -116,6 +116,10 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible && apk add openssh-client # install the dependencies needed for your playbook
+      - run:
+          name: Install openssh
+          command: |
+             apk add openssh-client # install the dependencies needed for your playbook ssh
 
       - run:
           name: Configure server
