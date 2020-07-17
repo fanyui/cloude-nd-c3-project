@@ -125,7 +125,7 @@ jobs:
       - run:
           name: Configure server
           command: |
-            ansible-playbook  ~/project/.circleci/ansible/main.yml -i ~/project/inventory 
+            cd .circleci/ansible/ && ansible-playbook  main.yml -i ~/project/inventory 
 
   run_db_migrations:
     working_directory: ~/project
