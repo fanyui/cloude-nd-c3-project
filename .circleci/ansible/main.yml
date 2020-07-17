@@ -6,7 +6,6 @@
     ansible_python_interpreter: /usr/bin/python3
     host_key_checking: False
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-    scp_if_ssh: True
   roles:
    - print
    
