@@ -5,12 +5,8 @@
   vars:
     ansible_python_interpreter: /usr/bin/python3
     host_key_checking: False
-  tasks:
-    - name: "install apache 2."
-      become: true
-      apt:
-        name: ["apache2"]
-        state: latest
-        update_cache: yes
-
-
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    scp_if_ssh: True
+  roles:
+   - print
+   
