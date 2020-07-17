@@ -7,6 +7,34 @@
     host_key_checking: False
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
     gather_facts: False
+  tasks:
+    - name: "install apache 2."
+      become: true
+      apt:
+        name: ["apache2"]
+        state: latest
+        update_cache: yes
+        
+    - name: "install python."
+      become: true
+      apt:
+        name: ["python3"]
+        state: latest
+        update_cache: yes
 
-  roles:
-   - print
+    - name: "install dependencies."
+      become: true
+      apt:
+        name: ["python", "nodejs", "npm"]
+        state: latest
+        update_cache: yes
+
+    - name: "install pm2"
+      become: true
+      npm:
+        name: pm2
+        global: yes
+        production: yes
+        state: present
+
+
