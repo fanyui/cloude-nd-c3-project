@@ -1,2 +1,3 @@
 [all]
 34.212.197.198
+ansible_user=ubuntu
