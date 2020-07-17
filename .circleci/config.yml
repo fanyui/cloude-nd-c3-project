@@ -118,14 +118,9 @@ jobs:
             apk add --update ansible # install the dependencies needed for your playbook
 
       - run:
-          name: Create if not exist and append th copy over ssh to ansible.cfg file
-          command: |
-            echo "[ssh_connection]" >> ~/project/.ansible.cfg
-            echo "scp_if_ssh=True" >> ~/project/.ansible.cfg
-      - run:
           name: Configure server
           command: |
-            cd .circleci/ansible/ && ansible-playbook  main.yml -i ~/project/inventory 
+            cd ~/project/.circleci/ansible/ && ansible-playbook  main.yml -i ~/project/inventory 
 
   run_db_migrations:
     working_directory: ~/project
