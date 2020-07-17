@@ -120,8 +120,8 @@ jobs:
       - run:
           name: Create if not exist and append th copy over ssh to ansible.cfg file
           command: |
-            echo "[ssh_connection]" >> ~/.ansible.cfg
-            echo "scp_if_ssh=True" >> ~/.ansible.cfg
+            echo "[ssh_connection]" >> ~/project/.ansible.cfg
+            echo "scp_if_ssh=True" >> ~/project/.ansible.cfg
       - run:
           name: Configure server
           command: |
