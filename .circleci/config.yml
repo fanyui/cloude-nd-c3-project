@@ -142,15 +142,18 @@ jobs:
 
   build_copy_bend_files:
     working_directory: ~/project
-    executor:
-      name: node/default
+    docker:
+      - image: python:3.7-alpine3.11
     steps:
       - attach_workspace:
-          at: ~/project        
-      - node/with-cache:
-          steps:
-            - run: cd ~/project/backend && npm install
-            - run: cd ~/project/backend && npm run build
+          at: ~/project    
+
+      - run:
+          name: Install npm
+          command: |
+            apk add --update npm
+      - run: cd ~/project/backend && npm install
+      - run: cd ~/project/backend && npm run build
       - add_ssh_keys:
           fingerprints: ["70:7f:5c:d9:8b:88:6b:b8:e8:68:90:74:cd:a5:a7:70"] # You can get this ID in the section where you registered the SSH Key
       - run:
