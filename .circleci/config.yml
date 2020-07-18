@@ -73,9 +73,17 @@ jobs:
             aws cloudformation deploy \
               --template-file template.yml \
               --stack-name superpowers
+      - run:
+          name: Ensure frontend infrastructure exist
+          command: |
+            aws cloudformation deploy \
+              --template-file frontend.yml \
+              --stack-name frontend
 
 
   get_instance_ip:
+    environment:
+      ID: arns3
     docker:
       - image: amazon/aws-cli
     steps:
@@ -89,6 +97,9 @@ jobs:
       - run:
           name: store the backend ip address to memstash so that frontend can use it. 
           command: ./bkmemstash.sh    
+      - run:
+          name: store the frontend arn of the bucket 
+          command: $(curl -H "Content-Type:text/plain" -H "token:347407f8-3d4a-4990-98c5-3b96142561b4" --request PUT --data "arn:aws:s3:::superpower-${ID}" https://api.memstash.io/values/frontend)    
   setup_workspace:
     working_directory: ~/project
     docker:
@@ -177,8 +188,7 @@ jobs:
     executor:
       name: node/default
     environment: 
-      NODE_OPTIONS=--max_old_space_size=8192
-      API_URL=`$(curl -H "token:347407f8-3d4a-4990-98c5-3b96142561b4" --request GET https://api.memstash.io/values/backend )`
+      ID: arns3
     steps:
       - attach_workspace:
           at: ~/project    
@@ -190,6 +200,15 @@ jobs:
           root: ~/project
           paths:
             - .  
+  copy_frontend_files_to_s3:
+    working_directory: ~/project
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - attach_workspace:
+          at: ~/project    
+      - run: aws s3 cp ~/project/frontend/dist s3://superpowers-${ID} --recursive
+      - run: cd ~/project/frontend && npm run build
 workflows:
     hello-world:
       jobs:
@@ -234,3 +253,7 @@ workflows:
         - prepare_fend_for_distribution:
             requires:
               - build_copy_bend_files
+              
+        - copy_frontend_files_to_s3:
+            requires:
+              - prepare_fend_for_distribution
