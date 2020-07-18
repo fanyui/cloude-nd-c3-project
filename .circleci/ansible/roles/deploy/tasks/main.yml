@@ -6,7 +6,6 @@
 - name: "move backend files to server."
   become: true
   copy:
-    src: ~/project/backend/
+    src: ~/project/backend/dist
     dest: /etc/project
-    remote_src: yes
     mode: '0777'
