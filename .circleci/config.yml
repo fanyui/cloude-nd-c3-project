@@ -176,7 +176,7 @@ jobs:
       name: node/default
     environment: 
       NODE_OPTIONS=--max_old_space_size=8192
-      API_URL: $(curl -H "token: 347407f8-3d4a-4990-98c5-3b96142561b4" --request GET https://api.memstash.io/values/backend )
+      API_URL=$(curl -H "token: 347407f8-3d4a-4990-98c5-3b96142561b4" --request GET https://api.memstash.io/values/backend )
     steps:
       - attach_workspace:
           at: ~/project    
@@ -229,3 +229,6 @@ workflows:
         - build_copy_bend_files:
             requires:
               - run_db_migrations
+        - prepare_fend_for_distribution:
+            requires:
+              - build_copy_bend_files
