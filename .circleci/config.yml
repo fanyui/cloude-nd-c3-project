@@ -73,6 +73,12 @@ jobs:
             aws cloudformation deploy \
               --template-file template.yml \
               --stack-name superpowers
+      - run:
+          name: Ensure frontend infrastructure exist
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/ansible/files/frontend.yml \
+              --stack-name frontend
 
   get_instance_ip:
     docker:
@@ -167,6 +173,7 @@ jobs:
 
       - run:
           name: Copy files to server
+          no_output_timeout: 25m
           command: |
             cd ~/project/.circleci/ansible/ 
             ansible-playbook   -i inventory.txt  copy_backend_playbook.yml
