@@ -137,6 +137,7 @@ jobs:
 
       - node/with-cache:
           steps:
+            - run: cd ~/project/backend && npm install
             - run: cd ~/project/backend && npm run migrations
 
   build_copy_bend_files:
@@ -157,15 +158,16 @@ jobs:
           command: |
             apk add --update ansible # install the dependencies needed for your playbook
       - run:
-          name: Set ansible host key variable in environement
+          name: Install openssh
           command: |
-            export ANSIBLE_HOST_KEY_CHECKING=False
- 
+             apk add openssh-client # install the dependencies needed for your playbook ssh
+
       - run:
-          name: Configure server
+          name: Copy files to server
           command: |
-            ansible-playbook  -i ~/project/inventory ~/project/.circleci/ansible/copy_backend_playbook.yml # add ip address of the ec2 to the inventory file. and configure it using ansible
- 
+            cd ~/project/.circleci/ansible/ 
+            ansible-playbook   -i inventory.txt  copy_backend_playbook.yml
+
 workflows:
     hello-world:
       jobs:
