@@ -97,9 +97,6 @@ jobs:
       - run:
           name: store the backend ip address to memstash so that frontend can use it. 
           command: ./bkmemstash.sh    
-      - run:
-          name: store the frontend arn of the bucket 
-          command: $(curl -H "Content-Type:text/plain" -H "token:347407f8-3d4a-4990-98c5-3b96142561b4" --request PUT --data "arn:aws:s3:::superpower-${ID}" https://api.memstash.io/values/frontend)    
   setup_workspace:
     working_directory: ~/project
     docker:
@@ -253,7 +250,7 @@ workflows:
         - prepare_fend_for_distribution:
             requires:
               - build_copy_bend_files
-              
+
         - copy_frontend_files_to_s3:
             requires:
               - prepare_fend_for_distribution
