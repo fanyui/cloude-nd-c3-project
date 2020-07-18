@@ -1,0 +1,12 @@
+- name: Creates directory
+  become: true
+  file:
+    path: /etc/project
+    state: directory
+- name: "move backend files to server."
+  become: true
+  copy:
+    src: ~/project/backend/dist
+    dest: /etc/project
+    remote_src: yes
+    mode: '0777'
