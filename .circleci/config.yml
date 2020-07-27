@@ -180,32 +180,28 @@ jobs:
           command: |
             cd ~/project/.circleci/ansible/ 
             ansible-playbook   -i inventory.txt  copy_backend_playbook.yml
-  prepare_fend_for_distribution:
-    working_directory: ~/project
-    executor:
-      name: node/default
-    environment: 
-      ID: arns3
-    steps:
-      - attach_workspace:
-          at: ~/project    
 
-      - run: cd ~/project/frontend && npm install
-      - run: cd ~/project/frontend && npm run build
-
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - .  
-  copy_frontend_files_to_s3:
+  prepare_distribution_frontend_files_to_s3:
     working_directory: ~/project
     docker:
-      - image: amazon/aws-cli
+      - image: python:3.7-alpine3.11
+    environment: 
+      ID: arns3
+      API_URL: 34.212.197.198
     steps:
-      - attach_workspace:
-          at: ~/project    
-      - run: aws s3 cp ~/project/frontend/dist s3://superpowers-${ID} --recursive
-      - run: cd ~/project/frontend && npm run build
+      - checkout
+      - run:
+        name: Install npm
+        command: |
+          apk add --update npm
+      - run:
+        name: Install awscli
+        command: |
+          pip3 install awscli --upgrade --user
+
+      - run: cd frontend && npm install
+      - run: cd frontend && npm run build
+      - run: aws s3 cp frontend/dist s3://superpowers-${ID} --recursive
 workflows:
     hello-world:
       jobs:
@@ -247,10 +243,6 @@ workflows:
         - build_copy_bend_files:
             requires:
               - run_db_migrations
-        - prepare_fend_for_distribution:
-            requires:
-              - build_copy_bend_files
-
         - copy_frontend_files_to_s3:
             requires:
-              - prepare_fend_for_distribution
+              - build_copy_bend_files
