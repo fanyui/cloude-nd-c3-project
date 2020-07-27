@@ -199,9 +199,7 @@ jobs:
       - run:
           name: Install awscli
           command: |
-            pip3 install awscli --upgrade --user 
-      - run: which aws
-      - run: echo 'export PATH=~/.local/bin:$PATH' >> $BASH_ENV
+            pip3 install awscli 
       - run: aws s3 cp frontend/dist s3://superpowers-${ID} --recursive
 workflows:
     hello-world:
