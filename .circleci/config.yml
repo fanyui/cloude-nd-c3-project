@@ -185,7 +185,6 @@ jobs:
     docker:
       - image: python:3.7-alpine3.11
     environment: 
-      BASH_ENV: ~/.bashrc
       ID: arns3
       API_URL: "34.212.197.198"
     steps:
