@@ -242,6 +242,6 @@ workflows:
         - build_copy_bend_files:
             requires:
               - run_db_migrations
-        - copy_frontend_files_to_s3:
+        - prepare_distribution_frontend_files_to_s3:
             requires:
               - build_copy_bend_files
