@@ -182,22 +182,21 @@ jobs:
             ansible-playbook   -i inventory.txt  copy_backend_playbook.yml
 
   prepare_distribution_frontend_files_to_s3:
-    working_directory: ~/project
     docker:
       - image: python:3.7-alpine3.11
     environment: 
       ID: arns3
-      API_URL: 34.212.197.198
+      API_URL: "34.212.197.198"
     steps:
       - checkout
       - run:
-        name: Install npm
-        command: |
-          apk add --update npm
+          name: Install npm
+          command: |
+            apk add --update npm
       - run:
-        name: Install awscli
-        command: |
-          pip3 install awscli --upgrade --user
+          name: Install awscli
+          command: |
+            pip3 install awscli --upgrade --user
 
       - run: cd frontend && npm install
       - run: cd frontend && npm run build
