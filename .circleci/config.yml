@@ -138,19 +138,16 @@ jobs:
             ansible-playbook   -i inventory.txt  main.yml
 
   run_db_migrations:
-    working_directory: ~/project
-    executor:
-      name: node/default
+    docker:
+      - image: circleci/node:latest
     steps:
-      - attach_workspace:
-          at: ~/project    
-
-      - run: cd ~/project/backend && npm install
+      - checkout
+      - run: cd backend && npm install
       - run: 
           name: Run database migrations 
           no_output_timeout: 10m
           command: |
-            cd ~/project/backend && npm run migrations
+            cd backend && npm run migrations
 
   build_copy_bend_files:
     working_directory: ~/project
