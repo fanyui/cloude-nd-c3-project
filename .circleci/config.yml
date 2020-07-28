@@ -1,15 +1,15 @@
 version: 2.1
 orbs:
   node: circleci/node@1.1.6
-commands:
-  desctroyStack:
-    description: "A very simple command for demonstration purposes"
-    parameters:
-      to:
-        type: string
-        default: "superpowers"
-    steps:
-      - run: aws cloudformation delete-stack --stack-name << parameters.to >>
+# commands:
+#   desctroyStack:
+#     description: "A very simple command for demonstration purposes"
+#     parameters:
+#       to:
+#         type: string
+#         default: "superpowers"
+#     steps:
+#       - run: aws cloudformation delete-stack --stack-name << parameters.to >>
 jobs:
   hello-world:
     docker: 
