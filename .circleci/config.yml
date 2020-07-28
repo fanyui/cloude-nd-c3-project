@@ -1,6 +1,15 @@
 version: 2.1
 orbs:
   node: circleci/node@1.1.6
+commands:
+  desctroyStack:
+    description: "A very simple command for demonstration purposes"
+    parameters:
+      to:
+        type: string
+        default: "superpowers"
+    steps:
+      - run: aws cloudformation delete-stack --stack-name << parameters.to >>
 jobs:
   hello-world:
     docker: 
@@ -210,6 +219,10 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install awscli
+          command: |
+            pip3 install awscli 
+      - run:
           name: smoke test frontend 
           command: |
             URL="http://superpower-${ID}.s3-website-${AWS_DEFAULT_REGION}.amazonaws.com/#/employees"            
@@ -218,7 +231,7 @@ jobs:
             return 1
             else
             return 0
-            fi
+            fi 
       - run:
           name: smoke test for backend.
           command: |
@@ -226,6 +239,18 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --output text)
             curl "http://${BACKEND_IP}:3030/api/status"
+  promote_to_production:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: promote newly deployed app to production 
+          command: |
+          cd ~/project/.circleci/files/
+            aws cloudformation deploy \
+              --template-file cloudfront.yml \
+              --stack-name cloudfront
 
 workflows:
     hello-world:
@@ -275,3 +300,6 @@ workflows:
         - run_smoke_test:
             requires:
               - prepare_distribution_frontend_files_to_s3
+        - promote_to_production:
+            requires:
+              - run_smoke_test
