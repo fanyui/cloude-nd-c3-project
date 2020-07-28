@@ -207,42 +207,42 @@ workflows:
         - hello-world
     build-compile-test:
       jobs:
-        # - checkout-code
-        # - build-compile-fend:
-        #     requires:
-        #       - checkout-code    
-        # - build-compile-bend:
-        #     requires:
-        #       - checkout-code
-        # - compile-test-fend:
-        #     requires:
-        #       - build-compile-fend
-        # - compile-test-bend:
-        #     requires:
-        #       - build-compile-bend
-        # - check-vulnerability:
-        #     requires:
-        #       - compile-test-bend
-        #       - compile-test-fend
-        # - create_infrastructure:
-        #     requires:
-        #       - check-vulnerability
-        # - get_instance_ip:
-        #     requires:
-        #       - create_infrastructure
-        # - setup_workspace:
-        #     requires:
-        #       - get_instance_ip
-        # - configure_infrastructure:
-        #     requires:
-        #       - setup_workspace
-        # - run_db_migrations:
-        #     requires:
-        #       - configure_infrastructure
-        # - build_copy_bend_files:
-        #     requires:
-        #       - run_db_migrations
-        # - prepare_distribution_frontend_files_to_s3:
-        - prepare_distribution_frontend_files_to_s3
-            # requires:
-            #   - build_copy_bend_files
+        - checkout-code
+        - build-compile-fend:
+            requires:
+              - checkout-code    
+        - build-compile-bend:
+            requires:
+              - checkout-code
+        - compile-test-fend:
+            requires:
+              - build-compile-fend
+        - compile-test-bend:
+            requires:
+              - build-compile-bend
+        - check-vulnerability:
+            requires:
+              - compile-test-bend
+              - compile-test-fend
+        - create_infrastructure:
+            requires:
+              - check-vulnerability
+        - get_instance_ip:
+            requires:
+              - create_infrastructure
+        - setup_workspace:
+            requires:
+              - get_instance_ip
+        - configure_infrastructure:
+            requires:
+              - setup_workspace
+        - run_db_migrations:
+            requires:
+              - configure_infrastructure
+        - build_copy_bend_files:
+            requires:
+              - run_db_migrations
+        - prepare_distribution_frontend_files_to_s3:
+        # - prepare_distribution_frontend_files_to_s3
+            requires:
+              - build_copy_bend_files
