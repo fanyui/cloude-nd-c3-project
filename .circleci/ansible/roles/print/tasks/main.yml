@@ -1,11 +1,12 @@
 ---
-- name: "install apache 2."
+- name: "install nodejs ."
   become: true
   apt:
-    name: ["apache2"]
+    name: ["nodejs"]
     state: latest
     update_cache: yes
-    
+    global: yes
+
 - name: "install python."
   become: true
   apt:
