@@ -1,8 +1,23 @@
 ---
-- name: "install nodejs ."
-  become: true
+- name: "update apt packages."
+  become: yes
   apt:
-    name: ["nodejs"]
+    update_cache: yes
+
+- name: "upgrade packages"
+  become: yes
+  apt:
+    upgrade: yes
+
+- name: remove dependencies that are no longer required
+  become: yes
+  apt:
+    autoremove: yes
+
+- name: "install dependencies."
+  become: yes
+  apt:
+    name: ["nodejs", "npm"]
     state: latest
     update_cache: yes
 
@@ -10,13 +25,6 @@
   become: true
   apt:
     name: ["python3"]
-    state: latest
-    update_cache: yes
-
-- name: "install dependencies."
-  become: true
-  apt:
-    name: ["nodejs-legacy", "npm"]
     state: latest
     update_cache: yes
 
@@ -28,7 +36,7 @@
     production: yes
     state: present
 
-- name: Insert/Update HTML surrounded by custom markers after <body> line
+- name: Insert/Update ENVIRONMENT variables surrounded by custom markers after <body> line
   blockinfile:
     path: ~/.profile
     block: |
