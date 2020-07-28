@@ -1,15 +1,16 @@
 - name: Creates directory
   become: true
   file:
-    path: ~/superpowers
+    path: /etc/project
     state: directory
 - name: "move backend files to server."
   become: true
   copy:
     src: ~/project/backend/dist
-    dest: ~/superpowers
+    dest: /etc/project
     mode: '0777'
 
 - name: Executing node
+  become: true
   shell: |
-    pm2 start ~/superpowers/main.js -f
+    pm2 start /etc/project/dist/main.js -f 
