@@ -148,7 +148,7 @@ jobs:
       - run: cd ~/project/backend && npm install
       - run: 
           name: Run database migrations 
-          no_output_timeout: 25m
+          no_output_timeout: 10m
           command: |
             cd ~/project/backend && npm run migrations
 
