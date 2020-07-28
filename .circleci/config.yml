@@ -247,10 +247,10 @@ jobs:
       - run:
           name: promote newly deployed app to production 
           command: |
-          cd ~/project/.circleci/files/
-            aws cloudformation deploy \
-              --template-file cloudfront.yml \
-              --stack-name cloudfront
+            cd ~/project/.circleci/files/
+              aws cloudformation deploy \
+                --template-file cloudfront.yml \
+                --stack-name cloudfront
 
 workflows:
     hello-world:
