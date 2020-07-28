@@ -146,7 +146,11 @@ jobs:
           at: ~/project    
 
       - run: cd ~/project/backend && npm install
-      - run: cd ~/project/backend && npm run migrations
+      - run: 
+          name: Run database migrations 
+          no_output_timeout: 25m
+          command: |
+            cd ~/project/backend && npm run migrations
 
   build_copy_bend_files:
     working_directory: ~/project
