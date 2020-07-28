@@ -30,7 +30,7 @@
 
 - name: Insert/Update HTML surrounded by custom markers after <body> line
   blockinfile:
-    path: ~/.bash_profile
+    path: ~/.profile
     block: |
       export ENVIRONMENT=production
       export TYPEORM_CONNECTION=postgres

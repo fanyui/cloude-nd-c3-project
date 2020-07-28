@@ -201,6 +201,32 @@ jobs:
           command: |
             pip3 install awscli 
       - run: aws s3 cp frontend/dist s3://superpower-${ID}/ --recursive
+  run_smoke_test:
+    docker:
+      - image: python:3.7-alpine3.11
+    environment: 
+      ID: arns3
+      API_URL: "34.212.197.198"
+    steps:
+      - checkout
+      - run:
+          name: smoke test frontend 
+          command: |
+            URL="http://superpower-${ID}.s3-website-${AWS_DEFAULT_REGION}.amazonaws.com/#/employees"            
+            if curl -s ${URL} | grep "Welcome"
+            then
+            return 1
+            else
+            return 0
+            fi
+      - run:
+          name: smoke test for backend.
+          command: |
+            BACKEND_IP=$(aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --output text)
+            curl "http://${BACKEND_IP}:3030/api/status"
+
 workflows:
     hello-world:
       jobs:
@@ -246,3 +272,6 @@ workflows:
         # - prepare_distribution_frontend_files_to_s3
             requires:
               - build_copy_bend_files
+        - run_smoke_test:
+            requires:
+              - prepare_distribution_frontend_files_to_s3
