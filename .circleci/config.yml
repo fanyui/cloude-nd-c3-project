@@ -105,6 +105,7 @@ jobs:
     steps:
       - checkout
       - run: apk add --no-cache --upgrade bash
+      - run: apk --no-cache add curl
       - run:
           name: store the backend ip address to memstash so that frontend can use it. 
           command: ./extract_ip_address.sh  
@@ -143,6 +144,7 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
+      - run: apk --no-cache add curl
       - run: apk add --no-cache --upgrade bash
       - run:
           name: store the backend ip address to memstash so that frontend can use it. 
@@ -205,6 +207,7 @@ jobs:
       ID: arns3
     steps:
       - checkout
+      - run: apk --no-cache add curl
       - run:
           name: set the API_URL to environment so that smoke test can be done to backend . 
           command: |
