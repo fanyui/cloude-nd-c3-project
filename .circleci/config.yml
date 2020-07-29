@@ -169,7 +169,7 @@ jobs:
 
       - run:
           name: Copy files to server
-          no_output_timeout: 30m
+          no_output_timeout: 60m
           command: |
             cd .circleci/ansible/ 
             ansible-playbook -i inventory.txt  copy_backend_playbook.yml
