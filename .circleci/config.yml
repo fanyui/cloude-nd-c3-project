@@ -172,7 +172,7 @@ jobs:
           no_output_timeout: 30m
           command: |
             cd .circleci/ansible/ 
-            ansible-playbook -i ~/project/inventory  copy_backend_playbook.yml
+            ansible-playbook -i inventory.txt  copy_backend_playbook.yml
 
   prepare_distribution_frontend_files_to_s3:
     docker:
