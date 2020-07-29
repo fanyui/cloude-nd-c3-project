@@ -26,13 +26,13 @@ Resources:
   EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: t2.micro
+      InstanceType: t3.micro
       SecurityGroups:
         - Ref: InstanceSecurityGroup
       KeyName: udacity
       # If this ami id is not available for you, you can find another (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html)
       # Ubuntu 18 or higher works fine
-      ImageId: ami-0ee55c43a87275e58
+      ImageId: ami-079652134906bcbad 
       Tags:
         - Key: Name
           Value: !Sub backend-${ID}
