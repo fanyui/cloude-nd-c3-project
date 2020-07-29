@@ -97,29 +97,18 @@ jobs:
               --output text >> inventory
       - run:
           name: store the backend ip address to memstash so that frontend can use it. 
-          command: ./bkmemstash.sh    
-  setup_workspace:
-    working_directory: ~/project
-    docker:
-      - image: circleci/node:latest
-    steps:
-      - checkout
-      - run:
-          name: store the backend ip address to memstash so that frontend can use it. 
-          command: ./extract_ip_address.sh  
-
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - .   
+          command: ./bkmemstash.sh       
 
   configure_infrastructure:
     working_directory: ~/project
     docker:
       - image: python:3.7-alpine3.11
     steps:
-      - attach_workspace:
-          at: ~/project      
+      - checkout
+      - run:
+          name: store the backend ip address to memstash so that frontend can use it. 
+          command: ./extract_ip_address.sh  
+     
       - add_ssh_keys:
           fingerprints: ["70:7f:5c:d9:8b:88:6b:b8:e8:68:90:74:cd:a5:a7:70"] # You can get this ID in the section where you registered the SSH Key    
       - run:
@@ -135,7 +124,7 @@ jobs:
           name: Configure server
           command: |
             cd ~/project/.circleci/ansible/ 
-            ansible-playbook   -i inventory.txt  main.yml
+            ansible-playbook  -i ~/project/inventory  main.yml
 
   run_db_migrations:
     docker:
@@ -154,9 +143,11 @@ jobs:
     docker:
       - image: python:3.7-alpine3.11
     steps:
-      - attach_workspace:
-          at: ~/project    
-
+      - checkout
+      - run:
+          name: store the backend ip address to memstash so that frontend can use it. 
+          command: ./extract_ip_address.sh  
+     
       - run:
           name: Install npm
           command: |
@@ -179,7 +170,7 @@ jobs:
           no_output_timeout: 25m
           command: |
             cd ~/project/.circleci/ansible/ 
-            ansible-playbook   -i inventory.txt  copy_backend_playbook.yml
+            ansible-playbook   -i ~/project/inventory  copy_backend_playbook.yml
 
   prepare_distribution_frontend_files_to_s3:
     docker:
@@ -272,12 +263,9 @@ workflows:
         - get_instance_ip:
             requires:
               - create_infrastructure
-        - setup_workspace:
-            requires:
-              - get_instance_ip
         - configure_infrastructure:
             requires:
-              - setup_workspace
+              - get_instance_ip
         - run_db_migrations:
             requires:
               - configure_infrastructure
