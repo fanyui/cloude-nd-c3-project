@@ -100,7 +100,6 @@ jobs:
           command: ./bkmemstash.sh       
 
   configure_infrastructure:
-    working_directory: ~/project
     docker:
       - image: python:3.7-alpine3.11
     steps:
@@ -123,8 +122,8 @@ jobs:
       - run:
           name: Configure server
           command: |
-            cd ~/project/.circleci/ansible/ 
-            ansible-playbook  -i ~/project/inventory  main.yml
+            cd .circleci/ansible/ 
+            ansible-playbook  -i inventory  main.yml
 
   run_db_migrations:
     docker:
@@ -139,7 +138,6 @@ jobs:
             cd backend && npm run migrations
 
   build_copy_bend_files:
-    working_directory: ~/project
     docker:
       - image: python:3.7-alpine3.11
     steps:
@@ -152,8 +150,8 @@ jobs:
           name: Install npm
           command: |
             apk add --update npm
-      - run: cd ~/project/backend && npm install
-      - run: cd ~/project/backend && npm run build
+      - run: cd backend && npm install
+      - run: cd backend && npm run build
       - add_ssh_keys:
           fingerprints: ["bb:52:30:ed:46:50:27:e5:bc:8d:54:2e:9e:fa:cf:d4"] # You can get this ID in the section where you registered the SSH Key
       - run:
@@ -169,8 +167,8 @@ jobs:
           name: Copy files to server
           no_output_timeout: 25m
           command: |
-            cd ~/project/.circleci/ansible/ 
-            ansible-playbook   -i ~/project/inventory  copy_backend_playbook.yml
+            cd .circleci/ansible/ 
+            ansible-playbook -i ~/project/inventory  copy_backend_playbook.yml
 
   prepare_distribution_frontend_files_to_s3:
     docker:
