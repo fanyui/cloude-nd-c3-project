@@ -110,7 +110,7 @@ jobs:
           command: ./extract_ip_address.sh  
      
       - add_ssh_keys:
-          fingerprints: ["70:7f:5c:d9:8b:88:6b:b8:e8:68:90:74:cd:a5:a7:70"] # You can get this ID in the section where you registered the SSH Key    
+          fingerprints: ["bb:52:30:ed:46:50:27:e5:bc:8d:54:2e:9e:fa:cf:d4"] # You can get this ID in the section where you registered the SSH Key    
       - run:
           name: Install dependencies
           command: |
@@ -155,7 +155,7 @@ jobs:
       - run: cd ~/project/backend && npm install
       - run: cd ~/project/backend && npm run build
       - add_ssh_keys:
-          fingerprints: ["70:7f:5c:d9:8b:88:6b:b8:e8:68:90:74:cd:a5:a7:70"] # You can get this ID in the section where you registered the SSH Key
+          fingerprints: ["bb:52:30:ed:46:50:27:e5:bc:8d:54:2e:9e:fa:cf:d4"] # You can get this ID in the section where you registered the SSH Key
       - run:
           name: Install dependencies
           command: |
@@ -177,9 +177,14 @@ jobs:
       - image: python:3.7-alpine3.11
     environment: 
       ID: arns3
-      API_URL: "34.212.197.198"
     steps:
       - checkout
+      - run:
+          name: set the API_URL to environment so that frontend can burn it to the code on compile. 
+          command: |
+           source ./set_backendip_env.sh  
+     
+
       - run:
           name: Install npm
           command: |
@@ -197,9 +202,13 @@ jobs:
       - image: python:3.7-alpine3.11
     environment: 
       ID: arns3
-      API_URL: "34.212.197.198"
     steps:
       - checkout
+      - run:
+          name: set the API_URL to environment so that smoke test can be done to backend . 
+          command: |
+           source ./set_backendip_env.sh  
+     
       - run:
           name: Install awscli
           command: |
