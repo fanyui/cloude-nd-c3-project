@@ -1,17 +1,25 @@
 version: 2.1
 
 commands:
-  desctroyStack:
+  desctroystack:
+    description: "A very simple command for reverting and destroyong stack "
+    parameters:
+      to:
+        type: string
+        default: "superpowers"
+      front:
+        type: string
+        default: "frontend"
     steps:
       - run:
           name: Delete s3 files
-          command: aws s3 rm s3://superpower-arns3 --recursive
+          command: aws s3 rm s3://superpower-${ID} --recursive
           when: on_fail
       - run:
           name: Delete current stacks
           command: |
-            aws cloudformation delete-stack --stack-name  superpowers
-            aws cloudformation delete-stack --stack-name  frontend
+            aws cloudformation delete-stack --stack-name  << parameters.to >>
+            aws cloudformation delete-stack --stack-name  << parameters.front >>
           when: on_fail
       - run:
           name: Revert last Migration
@@ -19,7 +27,7 @@ commands:
             VALUE=$(curl -H "token: ${CIRCLE_WORKFLOW_ID:0:8}" --request GET https://api.memstash.io/values/<< pipeline.id >>_migrations)
             if $VALUE == "true"
             then
-            cd backend
+            cd ./backend
             echo "Reverting migrations"
             npm run migrations:revert
             else 
@@ -261,7 +269,7 @@ jobs:
             --output text)
             curl "http://${BACKEND_IP}:3030/api/status"
 
-      - desctroyStack
+      - desctroystack
   promote_to_production:
     docker:
       - image: amazon/aws-cli
