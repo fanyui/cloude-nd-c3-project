@@ -3,8 +3,7 @@ orbs:
   node: circleci/node@3.0.1
 commands:
   desctroystack:
-    environment: 
-      ID: arns3
+
     description: "A very simple command for reverting and destroyong stack "
     parameters:
       to:
@@ -16,7 +15,7 @@ commands:
     steps:
       - run:
           name: Delete s3 files
-          command: aws s3 rm s3://superpower-${ID} --recursive
+          command: aws s3 rm s3://superpower-${arns3} --recursive
           when: on_fail
       - run:
           name: Delete current stacks
