@@ -151,7 +151,7 @@ jobs:
           name: Configure server
           command: |
             cd .circleci/ansible/ 
-            ansible-playbook  -i inventory  main.yml
+            ansible-playbook  -i inventory.txt  main.yml
 
   run_db_migrations:
     docker:
