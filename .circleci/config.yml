@@ -324,21 +324,40 @@ workflows:
               - compile-test-bend
               - compile-test-fend
         - create_infrastructure:
+            filters:
+              branches:
+                only: master
             requires:
               - check-vulnerability
         - get_instance_ip:
+            filters:
+              branches:
+                only: master
+
             requires:
               - create_infrastructure
         - configure_infrastructure:
+            filters:
+              branches:
+                only: master
             requires:
               - get_instance_ip
         - run_db_migrations:
+            filters:
+              branches:
+                only: master
             requires:
               - configure_infrastructure
         - build_copy_bend_files:
+            filters:
+              branches:
+                only: master
             requires:
               - run_db_migrations
         - prepare_distribution_frontend_files_to_s3:
+            filters:
+              branches:
+                only: master
         # - prepare_distribution_frontend_files_to_s3
             requires:
               - build_copy_bend_files
@@ -346,9 +365,15 @@ workflows:
         #     requires:
         #       - prepare_distribution_frontend_files_to_s3
         - promote_to_production:
+            filters:
+              branches:
+                only: master
             requires:
               # - run_smoke_test
               - prepare_distribution_frontend_files_to_s3
         - cleanup:
+            filters:
+              branches:
+                only: master
             requires:
               - promote_to_production
