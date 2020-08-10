@@ -1,7 +1,10 @@
 version: 2.1
-
+orbs:
+  node: circleci/node@3.0.1
 commands:
   desctroystack:
+    environment: 
+      ID: arns3
     description: "A very simple command for reverting and destroyong stack "
     parameters:
       to:
