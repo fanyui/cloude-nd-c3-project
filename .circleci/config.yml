@@ -1,15 +1,42 @@
 version: 2.1
 orbs:
   node: circleci/node@3.0.1
-# commands:
-#   desctroyStack:
-#     description: "A very simple command for demonstration purposes"
-#     parameters:
-#       to:
-#         type: string
-#         default: "superpowers"
-#     steps:
-#       - run: aws cloudformation delete-stack --stack-name << parameters.to >>
+commands:
+  desctroyStack:
+    environment: 
+      ID: arns3
+    description: "A very simple command for reverting and destroyong stack "
+    parameters:
+      to:
+        type: string
+        default: "superpowers"
+      front:
+        type: string
+        default: "frontend"
+    steps:
+      - run:
+          name: Delete s3 files
+          command: aws s3 rm s3://superpower-${ID} --recursive
+          when: on_fail
+      - run:
+          name: Delete current stacks
+          command: |
+            aws cloudformation delete-stack --stack-name  << parameters.to >>
+            aws cloudformation delete-stack --stack-name  << parameters.front >>
+          when: on_fail
+      - run:
+          name: Revert last Migration
+          command: |
+            VALUE=$(curl -H "token: ${CIRCLE_WORKFLOW_ID:0:8}" --request GET https://api.memstash.io/values/<< pipeline.id >>_migrations)
+            if $VALUE == "true"
+            then
+            cd ./backend
+            echo "Reverting migrations"
+            npm run migrations:revert
+            else 
+            echo "No migration occured"
+            fi
+          when: on_fail
 jobs:
   hello-world:
     docker: 
@@ -137,8 +164,17 @@ jobs:
           name: Run database migrations 
           no_output_timeout: 10m
           command: |
-            cd backend && npm run migrations
-
+            cd backend && npm run migrations | tee migration_results.txt
+      - run:
+          name: Save result value
+          command: |
+            cd backend
+            if grep "executed successfully" migration_results.txt
+            then
+            curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:8}" --request PUT --data "true" https://api.memstash.io/values/<< pipeline.id >>_migrations
+            else
+            curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:8}" --request PUT --data "false" https://api.memstash.io/values/<< pipeline.id >>_migrations
+            fi
   build_copy_bend_files:
     docker:
       - image: python:3.7-alpine3.11
@@ -235,6 +271,8 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --output text)
             curl "http://${BACKEND_IP}:3030/api/status"
+
+      - desctroyStack
   promote_to_production:
     docker:
       - image: amazon/aws-cli
@@ -247,52 +285,70 @@ jobs:
               aws cloudformation deploy \
                 --template-file cloudfront.yml \
                 --stack-name cloudfront
-
+  #cleanup all the resources created. 
+  cleanup:
+    docker:
+      - image: amazon/aws-cli
+    environment: 
+      ID: arns3
+    steps:
+      - checkout
+      - run:
+          name: destroy and clear the resources.
+          command: |
+            aws s3 rm s3://superpower-${ID} --recursive
+            aws cloudformation delete-stack --stack-name superpowers 
+            aws cloudformation delete-stack --stack-name frontend 
+            aws cloudformation delete-stack --stack-name cloudfront 
+          
 workflows:
     hello-world:
       jobs:
         - hello-world
     build-compile-test:
       jobs:
-        # - checkout-code
-        # - build-compile-fend:
-        #     requires:
-        #       - checkout-code    
-        # - build-compile-bend:
-        #     requires:
-        #       - checkout-code
-        # - compile-test-fend:
-        #     requires:
-        #       - build-compile-fend
-        # - compile-test-bend:
-        #     requires:
-        #       - build-compile-bend
-        # - check-vulnerability:
-        #     requires:
-        #       - compile-test-bend
-        #       - compile-test-fend
-        # - create_infrastructure:
-        #     requires:
-        #       - check-vulnerability
-        # - get_instance_ip:
-        #     requires:
-        #       - create_infrastructure
-        # - configure_infrastructure:
-        #     requires:
-        #       - get_instance_ip
-        # - run_db_migrations:
-        #     requires:
-        #       - configure_infrastructure
-        # - build_copy_bend_files:
-        #     requires:
-        #       - run_db_migrations
-        # - prepare_distribution_frontend_files_to_s3:
-        - prepare_distribution_frontend_files_to_s3
-            # requires:
-            #   - build_copy_bend_files
+        - checkout-code
+        - build-compile-fend:
+            requires:
+              - checkout-code    
+        - build-compile-bend:
+            requires:
+              - checkout-code
+        - compile-test-fend:
+            requires:
+              - build-compile-fend
+        - compile-test-bend:
+            requires:
+              - build-compile-bend
+        - check-vulnerability:
+            requires:
+              - compile-test-bend
+              - compile-test-fend
+        - create_infrastructure:
+            requires:
+              - check-vulnerability
+        - get_instance_ip:
+            requires:
+              - create_infrastructure
+        - configure_infrastructure:
+            requires:
+              - get_instance_ip
+        - run_db_migrations:
+            requires:
+              - configure_infrastructure
+        - build_copy_bend_files:
+            requires:
+              - run_db_migrations
+        - prepare_distribution_frontend_files_to_s3:
+        # - prepare_distribution_frontend_files_to_s3
+            requires:
+              - build_copy_bend_files
         - run_smoke_test:
             requires:
               - prepare_distribution_frontend_files_to_s3
         - promote_to_production:
             requires:
               - run_smoke_test
+        - cleanup:
+            requires:
+              - promote_to_production
