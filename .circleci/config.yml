@@ -293,7 +293,7 @@ jobs:
     steps:
       - checkout
       - run:
-          no_output_timeout: 25m
+          no_output_timeout: 50m
 
           name: destroy and clear the resources.
           command: |
