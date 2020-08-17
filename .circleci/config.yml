@@ -293,13 +293,20 @@ jobs:
     steps:
       - checkout
       - run:
-          no_output_timeout: 50m
-
-          name: destroy and clear the resources.
+          name: destroy and clear the s3 stack.
           command: |
-            aws s3 rm s3://superpower-${ID} --recursive
-            aws cloudformation delete-stack --stack-name superpowers 
-            aws cloudformation delete-stack --stack-name frontend 
+            aws s3 rm s3://superpower-${ID} --recursive     
+      - run:
+          name: destroy and clear the backend stack resources.
+          command: |
+            aws cloudformation delete-stack --stack-name superpowers       
+      - run:
+          name: destroy and clear the frontend stack resources.
+          command: |
+            aws cloudformation delete-stack --stack-name frontend    
+      - run:
+          name: destroy and clear the cloudfront stack resources.
+          command: |
             aws cloudformation delete-stack --stack-name cloudfront 
           
 workflows:
