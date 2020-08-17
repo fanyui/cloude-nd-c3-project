@@ -151,7 +151,7 @@ jobs:
           name: Configure server
           command: |
             cd .circleci/ansible/ 
-            ansible-playbook  -i inventory.txt  main.yml
+            ansible-playbook  -i ~/project/inventory  main.yml
 
   run_db_migrations:
     docker:
@@ -207,7 +207,7 @@ jobs:
           no_output_timeout: 60m
           command: |
             cd .circleci/ansible/ 
-            ansible-playbook -i inventory.txt  copy_backend_playbook.yml
+            ansible-playbook -i ~/project/inventory  copy_backend_playbook.yml
 
   prepare_distribution_frontend_files_to_s3:
     docker:
@@ -293,6 +293,8 @@ jobs:
     steps:
       - checkout
       - run:
+          no_output_timeout: 25m
+
           name: destroy and clear the resources.
           command: |
             aws s3 rm s3://superpower-${ID} --recursive
