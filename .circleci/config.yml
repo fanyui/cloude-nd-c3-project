@@ -380,9 +380,9 @@ workflows:
             requires:
               # - run_smoke_test
               - prepare_distribution_frontend_files_to_s3
-        - cleanup:
-            filters:
-              branches:
-                only: master
-            requires:
-              - promote_to_production
+        # - cleanup:
+        #     filters:
+        #       branches:
+        #         only: master
+        #     requires:
+        #       - promote_to_production
