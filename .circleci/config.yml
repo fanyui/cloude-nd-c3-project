@@ -99,13 +99,13 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              --stack-name superpowers
+              --stack-name backend
       - run:
           name: Ensure frontend infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file frontend.yml \
-              --stack-name frontend
+              --stack-name front
 
 
   get_instance_ip:
