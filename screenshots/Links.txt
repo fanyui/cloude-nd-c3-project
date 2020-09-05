@@ -1,0 +1,11 @@
+URL1: Github Link: https://github.com/fanyui/cloude-nd-c3-project
+
+URL2: CI/CD pipeline: https://app.circleci.com/pipelines/github/fanyui/cloude-nd-c3-project
+
+URL2: http://superpower-arns3.s3-website.af-south-1.amazonaws.com/
+
+URL3: http://ddkmk5q12u0y2.cloudfront.net/
+
+URL4:ec2-13-244-94-73.af-south-1.compute.amazonaws.com
+
+URL5: http://ec2-13-244-161-90.af-south-1.compute.amazonaws.com:9090/graph?g0.range_input=15m&g0.end_input=2020-08-20%2007%3A53&g0.expr=go_memstats_stack_inuse_bytes&g0.tab=0&g1.range_input=15m&g1.end_input=2020-08-20%2007%3A53&g1.stacked=0&g1.expr=node_cpu_seconds_total&g1.tab=0&g2.range_input=15m&g2.end_input=2020-08-20%2007%3A43&g2.stacked=0&g2.expr=node_disk_io_time_seconds_total&g2.tab=0
