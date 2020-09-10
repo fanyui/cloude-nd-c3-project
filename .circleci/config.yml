@@ -8,14 +8,14 @@ commands:
     parameters:
       to:
         type: string
-        default: "superpowers-${CIRCLE_WORKFLOW_ID:0:7}"
+        default: "superpowers-backend-${CIRCLE_WORKFLOW_ID:0:7}"
       front:
         type: string
         default: "frontend-${CIRCLE_WORKFLOW_ID:0:7}"
     steps:
       - run:
           name: Delete s3 files
-          command: aws s3 rm s3://superpower-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+          command: aws s3 rm s3://frontend-${CIRCLE_WORKFLOW_ID:0:7} --recursive
           when: on_fail
       - run:
           name: Delete current stacks
