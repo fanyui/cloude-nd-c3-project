@@ -1,16 +1,17 @@
 - name: Creates directory
   become: true
   file:
-    path: /etc/project
+    path: /home/ubuntu/backend
     state: directory
 - name: "move backend files to server."
   become: true
   copy:
-    src: /root/project/backend/dist
-    dest: /etc/project
+    src: /root/project/backend
+    dest: /home/ubuntu
     mode: '0777'
 
 - name: Executing node
   become: true
   shell: |
-    pm2 start /etc/project/dist/main.js -f 
+    cd /home/ubuntu/backend 
+    pm2 start npm -- run "start:dev"

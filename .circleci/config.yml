@@ -8,14 +8,14 @@ commands:
     parameters:
       to:
         type: string
-        default: "superpowers"
+        default: "superpowers-${CIRCLE_WORKFLOW_ID:0:7}"
       front:
         type: string
-        default: "frontend"
+        default: "frontend-${CIRCLE_WORKFLOW_ID:0:7}"
     steps:
       - run:
           name: Delete s3 files
-          command: aws s3 rm s3://superpower-${arns3} --recursive
+          command: aws s3 rm s3://superpower-${CIRCLE_WORKFLOW_ID:0:7} --recursive
           when: on_fail
       - run:
           name: Delete current stacks
@@ -26,7 +26,7 @@ commands:
       - run:
           name: Revert last Migration
           command: |
-            VALUE=$(curl -H "token: ${CIRCLE_WORKFLOW_ID:0:8}" --request GET https://api.memstash.io/values/<< pipeline.id >>_migrations)
+            VALUE=$(curl -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" --request GET https://api.memstash.io/values/<< pipeline.id >>_migrations)
             if $VALUE == "true"
             then
             cd ./backend
@@ -99,14 +99,16 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              --stack-name superpowers \
+              --stack-name "superpowers-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople
       - run:
           name: Ensure frontend infrastructure exist
           command: |
             aws cloudformation deploy \
-              --template-file frontend.yml \
-              --stack-name frontend
+              --template-file .circleci/files/frontend.yml \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
+              --stack-name "frontend-${CIRCLE_WORKFLOW_ID:0:7}" 
 
 
   get_instance_ip:
@@ -120,6 +122,7 @@ jobs:
           name: Get the instance ip address for backend 
           command: |
             aws ec2 describe-instances \
+              --filters "Name=tag:Name, Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> inventory
       - run:
@@ -171,9 +174,9 @@ jobs:
             cd backend
             if grep "executed successfully" migration_results.txt
             then
-            curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:8}" --request PUT --data "true" https://api.memstash.io/values/<< pipeline.id >>_migrations
+            curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" --request PUT --data "true" https://api.memstash.io/values/<< pipeline.id >>_migrations
             else
-            curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:8}" --request PUT --data "false" https://api.memstash.io/values/<< pipeline.id >>_migrations
+            curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" --request PUT --data "false" https://api.memstash.io/values/<< pipeline.id >>_migrations
             fi
   build_copy_bend_files:
     docker:
@@ -213,8 +216,6 @@ jobs:
   prepare_distribution_frontend_files_to_s3:
     docker:
       - image: python:3.7-alpine3.11
-    environment: 
-      ID: arns3
     steps:
       - checkout
       - run: apk --no-cache add curl
@@ -236,7 +237,7 @@ jobs:
           name: Install awscli
           command: |
             pip3 install awscli 
-      - run: aws s3 cp frontend/dist s3://superpower-${ID}/ --recursive
+      - run: aws s3 cp frontend/dist s3://superpower-${CIRCLE_WORKFLOW_ID:0:7}/ --recursive
   run_smoke_test:
     docker:
       - image: python:3.7-alpine3.11
@@ -257,7 +258,7 @@ jobs:
       - run:
           name: smoke test frontend 
           command: |
-            URL="http://superpower-${ID}.s3-website-${AWS_DEFAULT_REGION}.amazonaws.com/#/employees"            
+            URL="http://superpower-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-${AWS_DEFAULT_REGION}.amazonaws.com/#/employees"            
             if curl -s ${URL} | grep "Welcome"
             then
             return 1
@@ -268,6 +269,7 @@ jobs:
           name: smoke test for backend.
           command: |
             BACKEND_IP=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name, Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --output text)
             curl "http://${BACKEND_IP}:3030/api/status"
@@ -284,7 +286,8 @@ jobs:
             cd ~/project/.circleci/files/
               aws cloudformation deploy \
                 --template-file cloudfront.yml \
-                --stack-name cloudfront
+                --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
+                --stack-name "cloudfront-${CIRCLE_WORKFLOW_ID:0:7}" 
   #cleanup all the resources created. 
   cleanup:
     docker:
@@ -296,19 +299,19 @@ jobs:
       - run:
           name: destroy and clear the s3 stack.
           command: |
-            aws s3 rm s3://superpower-${ID} --recursive     
+            aws s3 rm s3://superpower-${CIRCLE_WORKFLOW_ID:0:7} --recursive     
       - run:
           name: destroy and clear the backend stack resources.
           command: |
-            aws cloudformation delete-stack --stack-name superpowers       
+            aws cloudformation delete-stack --stack-name "superpowers-backend-${CIRCLE_WORKFLOW_ID:0:7}"      
       - run:
           name: destroy and clear the frontend stack resources.
           command: |
-            aws cloudformation delete-stack --stack-name frontend    
+            aws cloudformation delete-stack --stack-name "frontend-${CIRCLE_WORKFLOW_ID:0:7}"    
       - run:
           name: destroy and clear the cloudfront stack resources.
           command: |
-            aws cloudformation delete-stack --stack-name cloudfront 
+            aws cloudformation delete-stack --stack-name "cloudfront-${CIRCLE_WORKFLOW_ID:0:7}" 
           
 workflows:
     # hello-world:

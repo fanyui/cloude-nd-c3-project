@@ -5,7 +5,6 @@ Parameters:
   ID:
     Description: Unique identifier.
     Type: String
-    Default: "arns3"
 
 Resources:
   WebsiteBucket:
@@ -26,7 +25,10 @@ Resources:
         - Sid: PublicReadForGetBucketObjects
           Effect: Allow
           Principal: '*'
-          Action: s3:GetObject
+          Action: [
+            "s3:GetObject",
+            "s3:PutObject"
+          ] 
           Resource: !Join ['', ['arn:aws:s3:::', !Ref 'WebsiteBucket', /*]]
 
 Outputs:
