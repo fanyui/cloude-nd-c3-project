@@ -10,8 +10,10 @@
     dest: /home/ubuntu
     mode: '0777'
 
+
 - name: Executing node
   become: true
   shell: |
     cd /home/ubuntu/backend 
+    npm install
     pm2 start npm -- run "start:dev"
