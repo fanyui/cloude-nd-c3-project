@@ -156,7 +156,7 @@ jobs:
           command: |
             cd .circleci/ansible/ 
             ansible-playbook  -i ~/project/inventory  main.yml
-
+      - desctroystack
   run_db_migrations:
     docker:
       - image: circleci/node:latest
@@ -178,6 +178,7 @@ jobs:
             else
             curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" --request PUT --data "false" https://api.memstash.io/values/<< pipeline.id >>_migrations
             fi
+      - desctroystack
   build_copy_bend_files:
     docker:
       - image: python:3.7-alpine3.11
@@ -212,7 +213,7 @@ jobs:
           command: |
             cd .circleci/ansible/ 
             ansible-playbook -i ~/project/inventory  copy_backend_playbook.yml
-
+      - desctroystack
   prepare_distribution_frontend_files_to_s3:
     docker:
       - image: python:3.7-alpine3.11
@@ -275,44 +276,32 @@ jobs:
             curl "http://${BACKEND_IP}:3030/api/status"
 
       - desctroystack
+  # promote newly created infrastructure and cleanup all the old resouces. 
   promote_to_production:
     docker:
       - image: amazon/aws-cli
     steps:
       - checkout
       - run:
-          name: promote newly deployed app to production 
+          name: promote newly deployed app to production then cleanup
           command: |
-            cd ~/project/.circleci/files/
-              aws cloudformation deploy \
-                --template-file cloudfront.yml \
-                --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
-                --stack-name "cloudfront-${CIRCLE_WORKFLOW_ID:0:7}" 
-  #cleanup all the resources created. 
-  cleanup:
-    docker:
-      - image: amazon/aws-cli
-    environment: 
-      ID: arns3
-    steps:
-      - checkout
-      - run:
-          name: destroy and clear the s3 stack.
-          command: |
-            aws s3 rm s3://superpower-${CIRCLE_WORKFLOW_ID:0:7} --recursive     
-      - run:
-          name: destroy and clear the backend stack resources.
-          command: |
-            aws cloudformation delete-stack --stack-name "superpowers-backend-${CIRCLE_WORKFLOW_ID:0:7}"      
-      - run:
-          name: destroy and clear the frontend stack resources.
-          command: |
-            aws cloudformation delete-stack --stack-name "frontend-${CIRCLE_WORKFLOW_ID:0:7}"    
-      - run:
-          name: destroy and clear the cloudfront stack resources.
-          command: |
-            aws cloudformation delete-stack --stack-name "cloudfront-${CIRCLE_WORKFLOW_ID:0:7}" 
-          
+            export OldWorkflowId=$(aws cloudformation \
+              list-exports --query "Exports[?Name==\'WorkflowId\'].Value" \
+              --no-paginate --output text)   
+            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+              --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+            echo Old workflow Id: "$(OldWorkflowId)"  
+            aws cloudformation deploy \
+              --template-file .circleci/files/cloudfront.yml \
+              --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
+              --stack-name cloudfront 
+            if [[ "${STACKS[@]}" =~ "$(OldWorkflowId)" ]]
+            then
+              aws s3 rm s3://superpower-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+              aws cloudformation delete-stack --stack-name "frontend-${OldWorkflowId}"
+              aws cloudformation delete-stack --stack-name "cloudfront-${OldWorkflowId}"
+  
+  
 workflows:
     # hello-world:
     #   jobs:
@@ -375,19 +364,13 @@ workflows:
         # - prepare_distribution_frontend_files_to_s3
             requires:
               - build_copy_bend_files
-        # - run_smoke_test:
-        #     requires:
-        #       - prepare_distribution_frontend_files_to_s3
+        - run_smoke_test:
+            requires:
+              - prepare_distribution_frontend_files_to_s3
         - promote_to_production:
             filters:
               branches:
                 only: master
             requires:
-              # - run_smoke_test
-              - prepare_distribution_frontend_files_to_s3
-        # - cleanup:
-        #     filters:
-        #       branches:
-        #         only: master
-        #     requires:
-        #       - promote_to_production
+              - run_smoke_test
+              # - prepare_distribution_frontend_files_to_s3
