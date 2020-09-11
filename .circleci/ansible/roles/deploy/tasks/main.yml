@@ -11,6 +11,11 @@
   shell: |
     cd /home/ubuntu/backend    
     npm install 
+    
+- name: "build package"
+  shell: |
+    cd /home/ubuntu/backend
+    npm run build
 
 - name: Executing node
   become: true

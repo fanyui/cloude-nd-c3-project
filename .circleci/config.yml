@@ -287,7 +287,9 @@ jobs:
               --no-paginate --output text)   
             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
               --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
-            echo Old workflow Id: "$(OldWorkflowId)"  
+
+            echo Old workflow Id: "${OldWorkflowId}"  
+
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
