@@ -283,7 +283,7 @@ jobs:
           name: promote newly deployed app to production then cleanup
           command: |
             export OldWorkflowId=$(aws cloudformation \
-              list-exports --query "Exports[?Name==\`WorkflowId\`].Value" \
+              list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
               --no-paginate --output text)   
             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
               --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
