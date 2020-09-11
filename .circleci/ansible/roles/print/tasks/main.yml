@@ -14,12 +14,12 @@
   apt:
     autoremove: yes
 
-- name: "install dependencies for server."
-  become: yes
-  apt:
-    name: ["nodejs", "npm"]
-    state: latest
-    update_cache: yes
+
+- name: "install node 12.X"
+  shell: |
+    curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+    sudo apt -y upgrade
+    sudo apt install -y nodejs
 
 - name: "install python."
   become: true

@@ -291,13 +291,15 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
-              --stack-name cloudfront 
+              --stack-name cloudfront  \
+              --tags project=udapeople &
+
             if [[ "${STACKS[@]}" =~ "$(OldWorkflowId)" ]]
             then
               aws s3 rm s3://frontend-${CIRCLE_WORKFLOW_ID:0:7} --recursive
               aws cloudformation delete-stack --stack-name "frontend-${OldWorkflowId}"
               aws cloudformation delete-stack --stack-name "cloudfront-${OldWorkflowId}"
-  
+            fi
   
 workflows:
     # hello-world:
