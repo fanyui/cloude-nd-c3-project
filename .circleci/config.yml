@@ -296,7 +296,7 @@ jobs:
 
             if [[ "${STACKS[@]}" =~ "$(OldWorkflowId)" ]]
             then
-              aws s3 rm s3://frontend-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+              aws s3 rm s3://frontend-${OldWorkflowId} --recursive
               aws cloudformation delete-stack --stack-name "frontend-${OldWorkflowId}"
               aws cloudformation delete-stack --stack-name "cloudfront-${OldWorkflowId}"
             fi
