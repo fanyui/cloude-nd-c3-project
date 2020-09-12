@@ -36,17 +36,17 @@
     production: yes
     state: present
 
-- name: Insert/Update ENVIRONMENT variables surrounded by custom markers after <body> line
-  blockinfile:
-    path: ~/.profile
-    block: |
-      export ENVIRONMENT=production
-      export TYPEORM_CONNECTION=postgres
-      export TYPEORM_ENTITIES=./src/modules/domain/*/.entity.ts
-      export TYPEORM_HOST=superpowers.c0jbboicaqrv.af-south-1.rds.amazonaws.com
-      export TYPEORM_PORT=5432
-      export TYPEORM_USERNAME=superpowers
-      export TYPEORM_PASSWORD=superpowers
-      export TYPEORM_DATABASE=superpowers
-    marker: "# {mark} ANSIBLE MANAGED BLOCK "
+# - name: Insert/Update ENVIRONMENT variables surrounded by custom markers after <body> line
+#   blockinfile:
+#     path: ~/.profile
+#     block: |
+#       export ENVIRONMENT=production
+#       export TYPEORM_CONNECTION=postgres
+#       export TYPEORM_ENTITIES=./src/modules/domain/*/.entity.ts
+#       export TYPEORM_HOST=superpowers.c0jbboicaqrv.af-south-1.rds.amazonaws.com
+#       export TYPEORM_PORT=5432
+#       export TYPEORM_USERNAME=superpowers
+#       export TYPEORM_PASSWORD=superpowers
+#       export TYPEORM_DATABASE=superpowers
+#     marker: "# {mark} ANSIBLE MANAGED BLOCK "
 

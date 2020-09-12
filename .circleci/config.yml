@@ -205,6 +205,7 @@ jobs:
           name: Copy files to server
           no_output_timeout: 60m
           command: |
+            printenv >> ./backend/.env
             cd .circleci/ansible/ 
             ansible-playbook -i ~/project/inventory  copy_backend_playbook.yml
       - desctroystack
@@ -365,13 +366,13 @@ workflows:
         # - prepare_distribution_frontend_files_to_s3
             requires:
               - build_copy_bend_files
-        # - run_smoke_test:
-        #     requires:
-        #       - prepare_distribution_frontend_files_to_s3
+        - run_smoke_test:
+            requires:
+              - prepare_distribution_frontend_files_to_s3
         - promote_to_production:
             filters:
               branches:
                 only: master
             requires:
-              # - run_smoke_test
-              - prepare_distribution_frontend_files_to_s3
+              - run_smoke_test
+              # - prepare_distribution_frontend_files_to_s3
